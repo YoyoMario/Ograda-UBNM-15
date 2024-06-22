@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 
 //static const uint8_t D0   = 16;
 //static const uint8_t D1   = 5;
@@ -19,6 +20,11 @@ const int FLASH_DURATION = 50;
 
 const uint8_t LED_PIN = 16; 
 const uint8_t RELAY_PIN = 14;
+
+const char* serverName = "http://192.168.0.5:8086/test";
+WiFiClient client;
+int currentIterationCount = 0;
+int timeToWait = 30; // 30 seconds.
 
 ESP8266WebServer server(8086);
 
@@ -49,6 +55,7 @@ void loop()
   {
     // Handle client.
     server.handleClient();
+    SentTestGetRequest();
   }
 
   delay(1000); 
@@ -93,7 +100,7 @@ void ConnectToWifi()
   Serial.println(WiFi.macAddress());
 
   // Assign listening path.
-  server.on("/", handleRoot);
+  server.on("/sezameOtvoriSe", handleRoot);
   server.on("/test", handleTest);
   server.on("/watchdog", watchdogTimer);
   server.onNotFound(handleNotFound);
@@ -102,6 +109,25 @@ void ConnectToWifi()
 
   // Visual signal can be turned off since we've completed.
   toggleLEDPin(HIGH);
+}
+
+void SentTestGetRequest()
+{
+  currentIterationCount ++;
+  if(currentIterationCount < timeToWait)
+  {    
+    //Serial.println("Too early...");
+    return;
+  }
+
+  //Serial.println("Sending!");
+  currentIterationCount = 0; // Reset.
+
+  HTTPClient http;
+  http.begin(client, serverName); // Specify the URL
+  http.GET(); // Send the GET request
+  http.end(); // End the request
+
 }
 
 void handleRoot() 
