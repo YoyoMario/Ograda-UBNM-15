@@ -11,8 +11,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-const char* SSID = "ZTE_5ACDBF";
-const char* PASSWORD = "6WSU5JYD6E";
+const char* ssid = "ZTE_5ACDBF";
+const char* password = "6WSU5JYD6E";
 
 const int FLASH_COUNT = 5;
 const int FLASH_DURATION = 50;
